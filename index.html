@@ -164,10 +164,10 @@
         }
 
         .pay-button {
-            background: #10b981;
+            background: rgba(0,0,0,0.06);
             margin-top: 0;
             border: none;
-            color: #fff;
+            color: #10b981;
             padding: 4px 14px;
             font-size: 15px;
             font-weight: 500;
@@ -176,30 +176,31 @@
             display: block;
             border-radius: 12px;
             transition: all 0.2s;
-            width: 80%;
-            max-width: 260px;
+            width: 95%;
+            max-width: 320px;
             margin: 0 auto;
             text-align: left;
             min-height: 32px;
             height: auto;
             line-height: 20px;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.08);
         }
 
         .pay-button:hover {
-            background: #0e9c6e;
+            background: #10b981;
+            color: #fff;
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(16,185,129,0.12);
         }
 
         .pay-btn-title {
+            display: flex;
+            align-items: center;
             font-size: 14px;
             font-weight: 600;
         }
 
         .pay-btn-desc {
             font-size: 11px;
-            color: #fff !important;
+            color: #181826 !important;
             margin-top: 2px;
             font-weight: 400;
         }
@@ -218,7 +219,7 @@
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            margin-right: 14px;
+            margin-right: 0;
             font-size: 18px;
             color: #10b981;
             background: none;
@@ -760,7 +761,7 @@
         }
 
         .footer-link:hover {
-            color: #0e9c6e;
+            color: #10b981;
         }
 
         /* Footer externe minimal */
@@ -984,6 +985,47 @@
             margin-bottom: 0;
         }
     </style>
+    <style>
+        .screen {
+            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
+        }
+    
+        .fadeSlideIn {
+            animation: fadeSlideIn 0.5s ease both;
+        }
+    
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+        button:active {
+            transform: scale(0.98);
+        }
+        .container-footer a.footer-support-btn {
+            font-size: 12px;
+            font-weight: 500;
+            color: #181826 !important;
+            border: none;
+            background: none;
+            padding: 0;
+            margin-left: 18px;
+            text-decoration: none !important;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .container-footer a.footer-support-btn:hover,
+        .container-footer a.footer-support-btn:focus {
+            color: #10b981 !important;
+            text-decoration: none !important;
+        }
+    </style>
 </head>
 <body>
     <div class="main-block">
@@ -997,15 +1039,8 @@
                             <div class="amount-value" id="transferAmount">1000 FCFA</div>
                         </div>
                         <button class="pay-button" onclick="showFormScreen()">
-                            <div class="pay-btn-content">
-                                <div class="pay-btn-logo">
-                                    <i class="fa fa-paper-plane"></i>
-                                </div>
-                                <div class="pay-btn-texts">
-                                    <div class="pay-btn-title">Pay with PAL</div>
-                                    <div class="pay-btn-desc">Paiement sécurisé via PAL</div>
-                                </div>
-                            </div>
+                            <span class="pay-btn-title"><i class="fa fa-paper-plane" style="margin-right:6px;"></i>Pay with PAL</span>
+                            <div class="pay-btn-desc">Paiement sécurisé via PAL</div>
                         </button>
                     </div>
                 </div>
@@ -1081,7 +1116,7 @@
                             </div>
                             <div class="review-info-block" style="margin-top:0;">
                                 <div class="review-info-row">
-                                    <span class="review-info-label"><i class="fa fa-user"></i><span class="label-green" style="margin-left:5px;">Marchand</span>&nbsp;: </span>
+                                    <span class="review-info-label"><i class="fa fa-store"></i><span class="label-green" style="margin-left:5px;">Marchand</span>&nbsp;: </span>
                                     <span class="review-info-value" id="reviewMerchantName">Yann Shop</span>
                                 </div>
                                 <div class="review-info-row">
@@ -1180,9 +1215,7 @@
             <div class="pal-logo">
                 <span>PA</span><span class="l-green">L</span><span class="l-green">.</span>
             </div>
-            <div class="footer-links">
-                <a href="#" class="footer-link">Support</a>
-            </div>
+            <a href="Pal_redirection.html" class="footer-support-btn">Support</a>
         </div>
     </div>
 
@@ -1415,31 +1448,6 @@
             }
         }
     </script>
-    
-    <style>
-        .screen {
-            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
-        }
-    
-        .fadeSlideIn {
-            animation: fadeSlideIn 0.5s ease both;
-        }
-    
-        @keyframes fadeSlideIn {
-            0% {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    
-        button:active {
-            transform: scale(0.98);
-        }
-    </style>
     
 </body>
 </html>
