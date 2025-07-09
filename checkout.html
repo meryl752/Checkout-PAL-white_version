@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Payment</title>
+    <!-- Import Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #181826;
+        }
+
+        body, input, button, select, textarea {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .main-block {
+            max-width: 350px;
+            width: 100%;
+            background: #fff;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            min-height: fit-content;
+            overflow: hidden;
+            color: #181826 !important;
+        }
+        .main-block * {
+            color: #181826 !important;
+        }
+        .container {
+            width: 100%;
+            background: transparent;
+            border-radius: 16px 16px 0 0;
+            box-shadow: none;
+            border: none;
+            padding-bottom: 0;
+        }
+
+        .screen {
+            padding: 20px;
+            display: none;
+            position: relative;
+            flex: 1;
+            opacity: 0;
+            transform: translateY(30px) scaleY(0.98);
+            transition: opacity 0.22s cubic-bezier(.4,0,.2,1), transform 0.22s cubic-bezier(.4,0,.2,1), max-height 0.22s cubic-bezier(.4,0,.2,1);
+            max-height: 0;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: translateY(0) scaleY(1);
+            max-height: 1200px;
+            overflow: visible;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            background: #fff;
+        }
+
+        .back-btn, .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            color: #181826;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover, .close-btn:hover {
+            color: #10b981;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #181826;
+            padding: 0;
+            margin: 0;
+            background: none;
+            border-radius: 0;
+            text-shadow: none;
+        }
+
+        /* Screen 1 - Amount Display */
+        .amount-screen {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 220px;
+            padding-top: 60px;
+            background: #fff;
+        }
+        .amount-logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 36px;
+        }
+        .amount-paypal-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 32px;
+        }
+        .amount-display {
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .amount-label {
+            color: #181826;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .amount-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #181826;
+            margin-bottom: 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .pay-button {
+            background: #10b981;
+            margin-top: 0;
+            border: none;
+            color: #fff;
+            padding: 4px 14px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            border-radius: 12px;
+            transition: all 0.2s;
+            width: 80%;
+            max-width: 260px;
+            margin: 0 auto;
+            text-align: left;
+            min-height: 32px;
+            height: auto;
+            line-height: 20px;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.08);
+        }
+
+        .pay-button:hover {
+            background: #0e9c6e;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.12);
+        }
+
+        .pay-btn-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pay-btn-desc {
+            font-size: 11px;
+            color: #fff !important;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        .pay-btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            min-height: 48px;
+        }
+        .pay-btn-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            margin-right: 14px;
+            font-size: 18px;
+            color: #10b981;
+            background: none;
+        }
+        .pay-btn-texts {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 100%;
+            min-width: 0;
+            word-break: break-word;
+            white-space: nowrap;
+        }
+
+        /* Screen 2 - Form */
+        .form-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .form-screen .header {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .form-content {
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #181826;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 16px;
+            color: #181826 !important;
+            border-radius: 8px;
+            background: #fff !important;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16,185,129,0.08);
+        }
+
+        .form-input::placeholder {
+            color: #8a8d95;
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .phone-input {
+            flex: 1 1 0%;
+            min-width: 0;
+        }
+        #operatorDisplay {
+            flex: 0 0 80px;
+            max-width: 80px;
+        }
+
+        .paste-btn {
+            display: none;
+        }
+
+        .operator-select {
+            width: 120px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 16px;
+            color: #181826 !important;
+            border-radius: 8px;
+            background: #fff !important;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+        .operator-select:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16,185,129,0.08);
+        }
+
+        .continue-btn {
+            width: 100%;
+            color: #fff;
+            background: #10b981;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.08);
+        }
+
+        .continue-btn:hover {
+            background: #0e9c6e;
+            transform: translateY(-1px);
+        }
+
+        /* Screen 3 - Review */
+        .review-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .review-screen .header {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .review-content {
+            flex: 1;
+        }
+
+        .review-section {
+            width: 100%;
+        }
+        .review-item {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            margin-bottom: 20px;
+            gap: 6px;
+            width: 100%;
+        }
+        .review-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border: 1px solid #10b981;
+            border-radius: 7px;
+            padding: 0 18px;
+            background: #fff;
+            min-height: 48px;
+            height: 48px;
+        }
+        .review-label, .review-value {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            white-space: nowrap !important;
+            background: none !important;
+        }
+        .review-label {
+            text-align: left;
+            flex: 1 1 0;
+            color: #8a8d95 !important;
+            margin-left: 12px;
+        }
+        .review-value {
+            text-align: right;
+            flex: 0 0 auto;
+            min-width: 60px;
+            color: #181826 !important;
+            margin-right: 12px;
+        }
+
+        .receive-label {
+            color: #3A3C4B;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .receive-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #181826;
+        }
+
+        .fee-label {
+            font-size: 13px;
+            color: #3A3C4B;
+            margin-top: 18px;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .receive-value {
+            font-size: 18px;
+            color: #181826;
+            font-weight: 600;
+        }
+
+        .paying-label {
+            color: #3A3C4B;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .paying-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #181826;
+        }
+
+        .paying-value {
+            color: #3A3C4B;
+            font-size: 14px;
+        }
+
+        .transfer-info {
+            color: #3A3C4B;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #3A3C4B;
+        }
+
+        .fee-value {
+            color: #181826;
+            font-weight: 600;
+        }
+
+        .status-section {
+            background: #f7f7f7;
+            padding: 15px;
+            margin: 20px -20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .status-title {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #181826;
+            margin-bottom: 10px;
+        }
+
+        .status-icon {
+            margin-right: 10px;
+            font-size: 18px;
+            color: #10b981;
+        }
+
+        .status-description {
+            color: #3A3C4B;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .loading-btn {
+            width: 100%;
+            background: #e0e0e0;
+            color: #181826;
+            border: none;
+            padding: 11px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: not-allowed;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #10b981;
+            border-top: 2px solid transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .country-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex: 1;
+        }
+
+        .country-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .country-list li {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: #181826;
+            background: #fff;
+        }
+        .country-list li:hover {
+            background: #f7f7f7;
+        }
+
+        .pay-action-btn {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(16,185,129,0.08);
+        }
+        .pay-action-btn:hover {
+            background: #0e9c6e;
+            transform: translateY(-1px);
+        }
+
+        .fa-spinner-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 32px;
+            position: relative;
+        }
+        .fa-spinner-bg {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(16,185,129,0.08);
+        }
+        .fa-circle-notch {
+            color: #10b981;
+            z-index: 1;
+        }
+
+        .or-section {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #8a8d95;
+            font-size: 15px;
+            margin: 14px 0 6px 0;
+            font-weight: 500;
+        }
+        .or-section::before,
+        .or-section::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+            margin: 0 10px;
+        }
+
+        .wave-btn {
+            width: 100%;
+            background: #f7f7f7;
+            color: #10b981;
+            border: 1px solid #10b981;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0;
+            transition: all 0.2s;
+        }
+        .wave-btn:hover {
+            background: #e0e0e0;
+            border-color: #0e9c6e;
+        }
+
+        .toast-success {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 40px;
+            transform: translateX(-50%);
+            background: #10b981;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(16,185,129,0.08);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .toast-success.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .alert-permanent {
+            width: 100%;
+            color: #181826;
+            border: 1.5px solid #ffb84a;
+            border-radius: 8px;
+            padding: 7px 12px 7px 48px;
+            font-size: 13px;
+            font-weight: 400;
+            margin-bottom: 14px;
+            text-align: left;
+            box-sizing: border-box;
+            position: relative;
+            background: #fff !important;
+        }
+        .alert-permanent .alert-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #ffb84a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+        }
+        .alert-permanent .alert-icon + span, .alert-permanent .alert-icon + div, .alert-permanent .alert-icon + p {
+            margin-left: 10px;
+        }
+
+        .success-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 200px;
+            background: #fff;
+        }
+
+        .success-screen .alert-permanent {
+            background: #fff !important;
+            color: #181826 !important;
+            border-color: #ffb84a;
+        }
+        .success-screen .alert-icon {
+            color: #ffb84a !important;
+        }
+        .success-screen .info-steps-container {
+            background: #f7f7f7 !important;
+            color: #181826 !important;
+            box-shadow: none;
+            border: 1px solid #e0e0e0;
+        }
+        .success-screen .info-steps-title {
+            color: #181826 !important;
+        }
+        .success-screen .info-steps-list li {
+            color: #181826 !important;
+        }
+        .success-screen .info-steps-icon {
+            color: #10b981 !important;
+        }
+
+        /* Footer PAL dans le conteneur */
+        .container-footer {
+            padding: 15px 20px;
+            background: #fff;
+            border-radius: 0 0 16px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: none;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pal-logo {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .pal-logo .l-green {
+            color: #10b981 !important;
+        }
+
+        .pal-dot {
+            color: #10b981;
+            font-size: 18px;
+            margin-left: 4px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .footer-link {
+            color: #10b981;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: #0e9c6e;
+        }
+
+        /* Footer externe minimal */
+        .footer-pal {
+            max-width: 340px;
+            width: 100%;
+            margin: 18px auto 0 auto;
+            text-align: center;
+            color: #3A3C4B;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+            background: none;
+        }
+
+        /* Ajout style info steps */
+        .info-steps-container {
+            background: #f7f7f7;
+            border-radius: 10px;
+            border: 1.5px solid #10b981;
+            padding: 16px 24px;
+            margin-bottom: 10px;
+            margin-top: 8px;
+            color: #181826;
+            box-shadow: none;
+            max-width: 100%;
+            text-align: left;
+            word-break: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            min-height: 48px;
+            width: 100%;
+        }
+        .info-steps-icon {
+            font-size: 20px;
+            color: #10b981;
+            flex-shrink: 0;
+        }
+        .info-steps-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #181826;
+        }
+        .info-steps-list {
+            margin: 0;
+            padding: 0 0 0 8px;
+            list-style: none;
+            color: #181826;
+            font-size: 11px;
+            font-weight: 400;
+        }
+        .info-steps-list li {
+            color: #181826;
+            font-size: 11px;
+            font-weight: 400;
+            margin-bottom: 2px;
+        }
+
+        /* Arrondir uniquement les sélecteurs des réseaux de téléphonie */
+        #operatorScreen .country-list li {
+            border-radius: 12px;
+        }
+        /* Les sélecteurs de pays restent sans arrondi */
+        #countryScreen .country-list li {
+            border-radius: 0;
+        }
+
+        .main-block input,
+        .main-block select,
+        .main-block textarea {
+            background: #fff !important;
+            color: #181826 !important;
+            border-color: #e0e0e0;
+        }
+
+        #countryScreen .country-list li,
+        #operatorScreen .country-list li {
+            background: #fff !important;
+            color: #181826 !important;
+        }
+        #countryScreen .country-list li:hover,
+        #operatorScreen .country-list li:hover {
+            background: #f7f7f7 !important;
+        }
+
+        #operatorScreen .country-list li[data-operator="orange"] img,
+        #operatorScreen .country-list li[data-operator="mtn"] img {
+            background: #fff !important;
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .success-badge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
+            animation: fadeIn 0.7s;
+            background: #fff;
+        }
+        .success-badge {
+            font-size: 60px;
+            color: #10b981;
+            margin-bottom: 18px;
+            animation: popIn 0.7s;
+        }
+        .success-badge-message {
+            font-size: 18px;
+            color: #181826;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0;
+        }
+        .success-details-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.7s;
+            width: 100%;
+            background: #fff;
+        }
+        .success-message-container {
+            display: flex;
+            align-items: center;
+            background: #f7f7f7;
+            border-radius: 10px;
+            padding: 16px 24px;
+            margin-bottom: 18px;
+            color: #10b981;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+        }
+        .success-message-container .fa-check-circle {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .success-alert-green {
+            background: #f7f7f7;
+            border: 1.5px solid #10b981;
+            color: #181826;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 10px;
+            padding: 16px 24px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+            width: 100%;
+        }
+        .success-alert-green .fa-check-circle {
+            color: #10b981;
+            border-radius: 50%;
+            font-size: 15px;
+            margin-right: 10px;
+            padding: 2px;
+        }
+        .success-alert-green .success-message {
+            color: #181826;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .review-info-block {
+            margin: 18px 0 10px 0;
+            padding: 10px 18px;
+            background: #fff;
+            border-radius: 7px;
+            border: 1px solid #e0e0e0;
+        }
+        .review-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .review-info-label {
+            color: #8a8d95;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .review-info-value {
+            color: #181826;
+            font-size: 13px;
+            font-weight: 500;
+            word-break: break-all;
+        }
+        .review-info-label .fa {
+            color: #10b981 !important;
+        }
+        .review-info-label .label-green {
+            color: #10b981 !important;
+            font-weight: 600;
+        }
+        .review-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .review-info-row:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-block">
+        <div class="container">
+            <!-- Screen 1: Amount Display -->
+            <div class="screen active" id="amountScreen">
+                <div class="amount-screen">
+                    <div class="amount-paypal-container">
+                        <div class="amount-display">
+                            <div class="amount-label">Montant à payer</div>
+                            <div class="amount-value" id="transferAmount">1000 FCFA</div>
+                        </div>
+                        <button class="pay-button" onclick="showFormScreen()">
+                            <div class="pay-btn-content">
+                                <div class="pay-btn-logo">
+                                    <i class="fa fa-paper-plane"></i>
+                                </div>
+                                <div class="pay-btn-texts">
+                                    <div class="pay-btn-title">Pay with PAL</div>
+                                    <div class="pay-btn-desc">Paiement sécurisé via PAL</div>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Form -->
+            <div class="screen" id="formScreen">
+                <div class="form-screen">
+                    <div class="header">
+                        <button class="back-btn" onclick="showAmountScreen()">‹</button>
+                        <div class="header-title">Informations de paiement</div>
+                        <button class="close-btn" onclick="closeApp()">×</button>
+                    </div>
+
+                    <div class="form-content">
+                        <form id="paymentForm">
+                            <div class="form-group">
+                                <label class="form-label">Pays</label>
+                                <div style="display:flex; align-items:center; gap:0; position:relative;">
+                                    <input type="text" class="form-input" id="countryDisplay" placeholder="Sélectionner un pays" readonly required style="cursor:pointer; flex:1; min-width:0; padding-right:38px;" onclick="showCountryScreen()">
+                                    <img id="countryFlag" src="" alt="" style="display:none; width:22px; height:16px; border-radius:3px; box-shadow:0 1px 4px rgba(0,0,0,0.08); background:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none;">
+                                </div>
+                                <input type="hidden" id="country" name="country" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Numéro de téléphone</label>
+                                <div class="phone-input-group">
+                                    <div style="position:relative; min-width:80px; max-width:80px; margin-right:8px;">
+                                        <input type="text" class="form-input" id="operatorDisplay" placeholder="OP" readonly required style="cursor:pointer; color:#10b981; min-width:80px; max-width:80px; padding-right:18px;" onclick="showOperatorScreen()">
+                                        <span style="position:absolute; right:7px; top:50%; transform:translateY(-50%); pointer-events:none; color:#b3bac1; font-size:13px;"><i class="fa fa-chevron-down"></i></span>
+                                    </div>
+                                    <input type="tel" class="form-input phone-input" id="phone" placeholder="Numéro" required style="flex:1;">
+                                    <input type="hidden" id="operator" name="operator" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Adresse email</label>
+                                <input type="email" class="form-input" id="email" placeholder="exemple@email.com" required>
+                            </div>
+
+                            <button type="submit" class="continue-btn">Continuer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 3: Review -->
+            <div class="screen" id="reviewScreen">
+                <div class="review-screen">
+                    <div class="header">
+                        <button class="back-btn" onclick="showFormScreen()">‹</button>
+                        <div class="header-title">Review payment</div>
+                        <button class="close-btn" onclick="closeApp()">×</button>
+                    </div>
+
+                    <div class="review-content">
+                        <div class="review-section">
+                            <div class="review-item">
+                                <div class="review-row">
+                                    <div class="review-label amount-label">Montant à transférer</div>
+                                    <div class="review-value receive-amount">1000 FCFA</div>
+                                </div>
+                                <div class="review-row">
+                                    <div class="review-label fee-label">Frais</div>
+                                    <div class="review-value receive-value">1.00 FCFA</div>
+                                </div>
+                                <div class="review-row">
+                                    <div class="review-label fee-label net-label">Net à payer</div>
+                                    <div class="review-value receive-amount">1001 FCFA</div>
+                                </div>
+                            </div>
+                            <div class="review-info-block" style="margin-top:0;">
+                                <div class="review-info-row">
+                                    <span class="review-info-label"><i class="fa fa-user"></i><span class="label-green" style="margin-left:5px;">Marchand</span>&nbsp;: </span>
+                                    <span class="review-info-value" id="reviewMerchantName">Yann Shop</span>
+                                </div>
+                                <div class="review-info-row">
+                                    <span class="review-info-label"><i class="fa fa-envelope"></i><span class="label-green" style="margin-left:5px;">Email</span>&nbsp;: </span>
+                                    <span class="review-info-value" id="reviewMerchantEmail">yann@email.com</span>
+                                </div>
+                            </div>
+
+                            <div class="transfer-info">
+                            </div>
+                        </div>
+
+                        <button id="payBtn" class="pay-action-btn" onclick="startProcessing()">
+                            Payer : 1001 F
+                        </button>
+                        <button id="processingBtn" class="loading-btn" style="display:none;" disabled>
+                            <span class="fa-spinner-wrapper">
+                                <span class="fa-spinner-bg"></span>
+                                <i class="fa fa-circle-notch fa-spin fa-2x"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Écran de sélection de pays -->
+            <div class="screen" id="countryScreen">
+                <div class="country-screen">
+                    <div class="header">
+                        <button class="back-btn" onclick="showFormScreen()"><i class="fa fa-arrow-left"></i></button>
+                        <div class="header-title">Sélectionner un pays</div>
+                        <button class="close-btn" onclick="closeApp()"><i class="fa fa-times"></i></button>
+                    </div>
+                    <ul class="country-list">
+                        <li onclick="selectCountry('BN', 'Benin')">Benin <img src='https://flagcdn.com/w20/bj.png' alt='Benin' style='float:right; width:22px; height:16px; border-radius:3px;'></li>
+                        <li onclick="selectCountry('CH', 'Côte d\'Ivoire')">Côte d'Ivoire <img src='https://flagcdn.com/w20/ci.png' alt='Côte d\'Ivoire' style='float:right; width:22px; height:16px; border-radius:3px;'></li>
+                        <li onclick="selectCountry('SN', 'Senegal')">Senegal <img src='https://flagcdn.com/w20/sn.png' alt='Senegal' style='float:right; width:22px; height:16px; border-radius:3px;'></li>
+                        <li onclick="selectCountry('CA', 'Cameroon')">Cameroon <img src='https://flagcdn.com/w20/cm.png' alt='Cameroon' style='float:right; width:22px; height:16px; border-radius:3px;'></li>
+                        <li onclick="selectCountry('NG', 'Nigeria')">Nigeria <img src='https://flagcdn.com/w20/ng.png' alt='Nigeria' style='float:right; width:22px; height:16px; border-radius:3px;'></li>
+                        <li onclick="selectCountry('GH', 'Ghana')">Ghana <img src='https://flagcdn.com/w20/gh.png' alt='Ghana' style='float:right; width:22px; height:16px; border-radius:3px;'></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Écran de sélection d'opérateur -->
+            <div class="screen" id="operatorScreen">
+                <div class="country-screen">
+                    <div class="header">
+                        <button class="back-btn" onclick="showFormScreen()"><i class="fa fa-arrow-left"></i></button>
+                        <div class="header-title">Sélectionner un opérateur</div>
+                        <button class="close-btn" onclick="closeApp()"><i class="fa fa-times"></i></button>
+                    </div>
+                    <ul class="country-list">
+                        <li data-operator="orange" onclick="selectOperator('orange', 'Orange')">Orange <img src='assets\orange-money-logo.png' alt='Orange' style='float:right; width:28px; height:28px;'></li>
+                        <li data-operator="mtn" onclick="selectOperator('mtn', 'MTN')">MTN <img src='assets\MTN-Logo.png' alt='MTN' style='float:right; width:28px; height:28px;'></li>
+                        <li data-operator="moov" onclick="selectOperator('moov', 'Moov')">Moov <img src='images-removebg-preview.png' alt='Moov' style='float:right; width:28px; height:28px;'></li>
+                        <li data-operator="wave" onclick="selectOperator('wave', 'Wave')">Wave <img src='assets\unnamed.png' alt='Wave' style='float:right; width:28px; height:28px;'></li>
+                        <li data-operator="moovafrica" onclick="selectOperator('moovafrica', 'Moov Africa')">Moov Africa <img src='images-removebg-preview.png' alt='Moov Africa' style='float:right; width:28px; height:28px;'></li>
+                        <li data-operator="moovmoney" onclick="selectOperator('moovmoney', 'Moov Money')">Moov Money <img src='images-removebg-preview.png' alt='Moov Money' style='float:right; width:28px; height:28px;'></li>
+                        <li data-operator="moovbenin" onclick="selectOperator('moovbenin', 'Moov Bénin')">Moov Bénin <img src='images-removebg-preview.png' alt='Moov Bénin' style='float:right; width:28px; height:28px;'></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Écran de succès -->
+            <div class="screen" id="successScreen">
+                <div class="success-screen">
+                    <div id="successBadgeContainer" class="success-badge-container">
+                        <div class="success-badge">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <div class="success-badge-message">Votre paiement a bien été effectué !</div>
+                    </div>
+                    <div id="successDetailsContainer" class="success-details-container" style="display:none;">
+                        <div class="success-message-container success-alert-green">
+                            <i class="fa fa-check-circle"></i>
+                            <span class="success-message">Votre paiement a bien été effectué !</span>
+                        </div>
+                        <div class="alert-permanent"><span class="alert-icon"><i class="fa fa-exclamation-circle"></i></span>Si vous n'avez pas recu le message pour valider le paiement, composer *880# puis suivez les étapes de validations.</div>
+                        <div class="info-steps-container">
+                            <span class="info-steps-icon"><i class="fa fa-clock-o"></i></span>
+                            <div style="display:flex; flex-direction:column; justify-content:center;">
+                                <div class="info-steps-title">Étapes de validation</div>
+                                <ul class="info-steps-list">
+                                    <li>8- Validation</li>
+                                    <li>2- Validation en attente</li>
+                                    <li>1- Validation financière</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-footer">
+            <div class="pal-logo">
+                <span>PA</span><span class="l-green">L</span><span class="l-green">.</span>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Support</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notification -->
+    <div id="toast" class="toast-success">Votre paiement a bien été transféré. Gardez bien votre reçu !</div>
+
+    <script>
+        // Gestion des écrans avec animation fluide améliorée
+        function showScreen(screenId) {
+            // Masquer tous les écrans avec animation
+            document.querySelectorAll('.screen').forEach(screen => {
+                if (screen.classList.contains('active')) {
+                    screen.classList.remove('active');
+                    // Forcer le repaint
+                    void screen.offsetWidth;
+                }
+            });
+    
+            // Afficher l'écran suivant avec animation douce
+            const nextScreen = document.getElementById(screenId);
+            nextScreen.style.display = 'flex';
+            nextScreen.classList.add('fadeSlideIn');
+            void nextScreen.offsetWidth;
+            nextScreen.classList.add('active');
+    
+            // Retirer la classe d'animation après animation
+            setTimeout(() => {
+                nextScreen.classList.remove('fadeSlideIn');
+            }, 500);
+    
+            // Cacher les autres écrans après transition
+            setTimeout(() => {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    if (!screen.classList.contains('active')) {
+                        screen.style.display = 'none';
+                    }
+                });
+            }, 500);
+        }
+    
+        function showAmountScreen() {
+            showScreen('amountScreen');
+        }
+    
+        function showFormScreen() {
+            showScreen('formScreen');
+        }
+    
+        function showReviewScreen() {
+            showScreen('reviewScreen');
+        }
+    
+        function closeApp() {
+            if (confirm('Êtes-vous sûr de vouloir fermer l\'application ?')) {
+                window.close();
+            }
+        }
+    
+        async function pastePhone() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('phone').value = text;
+                const event = new Event('input', { bubbles: true });
+                document.getElementById('phone').dispatchEvent(event);
+            } catch (err) {
+                console.error('Erreur lors du collage:', err);
+                alert('Impossible de coller. Veuillez saisir manuellement le numéro.');
+            }
+        }
+    
+        if(document.getElementById('paymentForm')) {
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const country = document.getElementById('country').value;
+                const phone = document.getElementById('phone').value;
+                const email = document.getElementById('email').value;
+                const operator = document.getElementById('operator').value;
+                if (!country || !phone || !email || !operator) {
+                    alert('Veuillez remplir tous les champs');
+                    return;
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Veuillez entrer une adresse email valide');
+                    return;
+                }
+                // Mettre à jour l'email du marchand dans la review
+                // document.getElementById('reviewMerchantEmail').textContent = email;
+                showReviewScreen();
+            });
+        }
+    
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const currentScreen = document.querySelector('.screen.active');
+                if (currentScreen.id === 'formScreen') {
+                    showAmountScreen();
+                } else if (currentScreen.id === 'reviewScreen') {
+                    showFormScreen();
+                }
+            }
+        });
+    
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.startsWith('33')) {
+                    value = '+33 ' + value.slice(2).replace(/(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5');
+                } else if (value.startsWith('0')) {
+                    value = '+33 ' + value.slice(1).replace(/(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5');
+                } else {
+                    value = '+' + value;
+                }
+            }
+            e.target.value = value;
+        });
+    
+        document.getElementById('email').addEventListener('blur', function(e) {
+            const email = e.target.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+            if (email && !emailRegex.test(email)) {
+                e.target.style.borderColor = '#dc3545';
+            } else {
+                e.target.style.borderColor = '#4a4d55';
+            }
+        });
+    
+        function showCountryScreen() {
+            showScreen('countryScreen');
+        }
+    
+        function selectCountry(code, name) {
+            document.getElementById('country').value = code;
+            document.getElementById('countryDisplay').value = name;
+            // Afficher le drapeau
+            const flagMap = {
+                'BN': 'https://flagcdn.com/w20/bj.png',
+                'CH': 'https://flagcdn.com/w20/ci.png',
+                'SN': 'https://flagcdn.com/w20/sn.png',
+                'CA': 'https://flagcdn.com/w20/cm.png',
+                'NG': 'https://flagcdn.com/w20/ng.png',
+                'GH': 'https://flagcdn.com/w20/gh.png',
+            };
+            const flagUrl = flagMap[code] || '';
+            const flagImg = document.getElementById('countryFlag');
+            console.log('[DEBUG] Sélection pays:', code, name, flagUrl, flagImg);
+            if(flagUrl && flagImg) {
+                flagImg.src = flagUrl;
+                flagImg.style.display = 'block';
+                flagImg.style.visibility = 'visible';
+                flagImg.alt = name;
+            } else if(flagImg) {
+                flagImg.style.display = 'none';
+                flagImg.style.visibility = 'hidden';
+            }
+            // Réinitialiser l'opérateur sélectionné
+            document.getElementById('operator').value = '';
+            document.getElementById('operatorDisplay').value = '';
+            // Adapter la liste des opérateurs selon le pays
+            updateOperatorList(code);
+            showFormScreen();
+        }
+    
+        function showOperatorScreen() {
+            showScreen('operatorScreen');
+        }
+    
+        function selectOperator(code, name) {
+            document.getElementById('operator').value = code;
+            document.getElementById('operatorDisplay').value = name;
+            showFormScreen();
+        }
+    
+        function showSuccessSequence() {
+            // Affiche d'abord le badge centré
+            document.getElementById('successBadgeContainer').style.display = 'flex';
+            document.getElementById('successDetailsContainer').style.display = 'none';
+            // Après 2,5s, transition vers le container détaillé
+            setTimeout(() => {
+                document.getElementById('successBadgeContainer').style.display = 'none';
+                document.getElementById('successDetailsContainer').style.display = 'flex';
+            }, 2500);
+        }
+    
+        function startProcessing() {
+            document.getElementById('payBtn').style.display = 'none';
+            document.getElementById('processingBtn').style.display = 'block';
+            const proceed = confirm('Annuler pour annuler');
+            if (!proceed) {
+                document.getElementById('processingBtn').style.display = 'none';
+                document.getElementById('payBtn').style.display = 'block';
+                return;
+            }
+            setTimeout(() => {
+                showScreen('successScreen');
+                showSuccessSequence();
+            }, 2000);
+        }
+    
+        // Affiche/masque les opérateurs selon le pays
+        function updateOperatorList(countryCode) {
+            // Tous les opérateurs
+            const operators = [
+                { code: 'orange', name: 'Orange', countries: ['CH'] },
+                { code: 'mtn', name: 'MTN', countries: ['BN'] },
+                { code: 'moov', name: 'Moov', countries: [] },
+                { code: 'wave', name: 'Wave', countries: ['CH', 'CA'] },
+                { code: 'moovafrica', name: 'Moov Africa', countries: [] },
+                { code: 'moovmoney', name: 'Moov Money', countries: [] },
+                { code: 'moovbenin', name: 'Moov Bénin', countries: [] },
+            ];
+            // Cacher tous les opérateurs
+            document.querySelectorAll('#operatorScreen .country-list li').forEach(li => {
+                li.style.display = 'none';
+            });
+            // Afficher ceux autorisés
+            if (countryCode === 'BN') {
+                document.querySelector("#operatorScreen .country-list li[data-operator='mtn']").style.display = '';
+            } else if (countryCode === 'CH') {
+                document.querySelector("#operatorScreen .country-list li[data-operator='orange']").style.display = '';
+                document.querySelector("#operatorScreen .country-list li[data-operator='wave']").style.display = '';
+            } else if (countryCode === 'CA') {
+                document.querySelector("#operatorScreen .country-list li[data-operator='wave']").style.display = '';
+            } else {
+                // Par défaut, tout afficher
+                document.querySelectorAll('#operatorScreen .country-list li').forEach(li => {
+                    li.style.display = '';
+                });
+            }
+        }
+    </script>
+    
+    <style>
+        .screen {
+            transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
+        }
+    
+        .fadeSlideIn {
+            animation: fadeSlideIn 0.5s ease both;
+        }
+    
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+        button:active {
+            transform: scale(0.98);
+        }
+    </style>
+    
+</body>
+</html>

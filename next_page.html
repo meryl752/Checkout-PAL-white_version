@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demande de paiement - PAL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f2f4f7;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .main-card {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #e9f7ef;
+      padding: 24px;
+      text-align: center;
+      border-bottom: 1px solid #d3e5dc;
+    }
+
+    .amount {
+      font-size: 28px;
+      font-weight: 700;
+      color: #28a745;
+    }
+
+    .email {
+      font-size: 14px;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    .content {
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .timer {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    .timer span {
+      color: #dc3545;
+      font-weight: 700;
+    }
+
+    .footer {
+      background-color: #f0f2f5;
+      padding: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .security-icon {
+      width: 18px;
+      height: 18px;
+      fill: #28a745;
+    }
+
+    .pal-text {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .alert {
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.5;
+      animation: fadeIn 0.5s ease;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Message succès : icône petite à gauche, texte inline */
+    .alert-success {
+      background-color: #e6f4ea;
+      color: #2e7d32;
+      border: 1px solid #c3e6cb;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .alert-success .alert-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Message warning : icône centrée au dessus, texte justifié */
+    .alert-warning {
+      background-color: #fff8e1;
+      color: #8a6d3b;
+      border: 1px solid #ffeeba;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* text-align: left; */
+      gap: 14px;
+    }
+
+    .alert-warning .alert-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .alert span {
+      display: block;
+      line-height: 1.5;
+    }
+
+    .alert.hidden {
+      display: none;
+    }
+
+    .process-flow {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      gap: 20px;
+      position: relative;
+      margin-bottom: 32px;
+      padding-left: 20px;
+      border-left: 3px solid #e0e0e0;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .label {
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .step-item.completed .circle {
+      background-color: #28a745;
+    }
+
+    .step-item.completed .label {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .step-item.completed .label::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%2328a745" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.285 6.709l-11.44 11.44-5.566-5.566 1.414-1.414 4.152 4.152 10.025-10.025z"/></svg>');
+      background-repeat: no-repeat;
+      background-size: contain;
+      margin-left: 6px;
+      margin-top: 2px;
+    }
+
+    .step-item.current .circle {
+      background-color: #6c757d;
+    }
+
+    .step-item.current .label {
+      color: #6c757d;
+      font-weight: 600;
+    }
+
+    .step-item.pending .circle {
+      background-color: #ffc107;
+      color: #000;
+    }
+
+    .step-item.pending .label {
+      color: #ffc107;
+      font-weight: 600;
+    }
+
+    .loader-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ccc;
+      border-top: 2px solid #28a745;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    .step-item:not(.current) .loader-spinner {
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-card">
+    <div class="header">
+      <div class="amount">1 XOF</div>
+      <div class="email">georiseno@gmail.com</div>
+    </div>
+
+    <div class="content">
+      <!-- Message de succès temporaire -->
+      <div class="alert alert-success" id="success-alert">
+        <svg class="alert-icon" viewBox="0 0 24 24">
+          <path fill="#28a745" d="M12 0a12 12 0 1012 12A12.013 12.013 0 0012 0zm5.292 9.292l-5.586 5.586a1 1 0 01-1.414 0l-2.586-2.586a1 1 0 011.414-1.414L11 12.586l4.878-4.878a1 1 0 011.414 1.414z"/>
+        </svg>
+        <span>Demande de paiement envoyée avec succès !</span>
+      </div>
+
+      <!-- Message d'alerte permanent -->
+      <div class="alert alert-warning">
+        <svg class="alert-icon" viewBox="0 0 24 24">
+          <path fill="#ffc107" d="M1 21h22L12 2 1 21zm13-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        </svg>
+        <span>Si vous n'avez pas reçu le message, composez manuellement le code pour valider.</span>
+      </div>
+
+      <!-- Étapes -->
+      <div class="process-flow">
+        <div class="step-item completed" id="step-1">
+          <div class="circle">1</div>
+          <div class="label">Validation financière</div>
+          <div class="loader-spinner"></div>
+        </div>
+        <div class="step-item current" id="step-2">
+          <div class="circle">2</div>
+          <div class="label">Validation en attente</div>
+          <div class="loader-spinner"></div>
+        </div>
+        <div class="step-item pending" id="step-3">
+          <div class="circle">3</div>
+          <div class="label">Validation</div>
+          <div class="loader-spinner"></div>
+        </div>
+      </div>
+
+      <!-- Compte à rebours -->
+      <div class="timer">Temps restant : <span id="countdown">27:50</span></div>
+    </div>
+
+    <div class="footer">
+      <svg class="security-icon" viewBox="0 0 24 24">
+        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+      </svg>
+      <span>Secured by <span class="pal-text">PAL</span>.</span>
+    </div>
+  </div>
+
+  <script>
+    // Masquer le message de succès après 4 secondes
+    setTimeout(() => {
+      const alert = document.getElementById('success-alert');
+      if (alert) alert.classList.add('hidden');
+    }, 4000);
+
+    // Compte à rebours
+    let timeLeft = 27 * 60 + 50;
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('countdown').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      if (timeLeft > 0) timeLeft--;
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    // Simulation de l'enchaînement des étapes
+    setTimeout(() => {
+      // Étape 2 devient complétée
+      const step2 = document.getElementById('step-2');
+      step2.classList.remove('current');
+      step2.classList.add('completed');
+
+      // Étape 3 devient en cours
+      const step3 = document.getElementById('step-3');
+      step3.classList.remove('pending');
+      step3.classList.add('current');
+    }, 6000);
+  </script>
+</body>
+</html>
